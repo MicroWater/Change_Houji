@@ -90,7 +90,8 @@ rm -rf "$GITHUB_WORKSPACE"/${zip_name}
 End_Time 解压包
 mkdir -p "$GITHUB_WORKSPACE"/Extra_dir
 echo -e "${Red}- 开始解包payload"
-$payload_extract -s -o "$GITHUB_WORKSPACE"/Extra_dir/ -i "$GITHUB_WORKSPACE"/"${device}"/payload.bin -X -e -T0
+$payload_extract -s -o "$GITHUB_WORKSPACE"/Extra_dir/ -i "$GITHUB_WORKSPACE"/"${device}"/payload.bin -X mi_ext -e -T0
+$payload_extract -s -o "$GITHUB_WORKSPACE"/Extra_dir/ -i "$GITHUB_WORKSPACE"/"${device}"/payload.bin -X mi_ext -T0
 sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/payload.bin
 echo -e "${Red}- 开始分解包image"
 for i in mi_ext odm system_dlkm vendor vendor_dlkm product system system_ext; do
