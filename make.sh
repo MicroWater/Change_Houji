@@ -89,7 +89,6 @@ mkdir -p "$GITHUB_WORKSPACE"/zip
 echo -e "${Yellow}- 开始解压移植包"
 Start_Time
 $a7z x "$GITHUB_WORKSPACE"/$port_zip_name -r -o"$GITHUB_WORKSPACE"/Third_Party >/dev/null
-rm -rf "$GITHUB_WORKSPACE"/$port_zip_name
 End_Time 解压移植包
 echo -e "${Yellow}- 开始解压底包"
 Start_Time
