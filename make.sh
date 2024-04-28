@@ -73,7 +73,7 @@ End_Time() {
 echo -e "${Red}- 开始下载系统包"
 Start_Time
 aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" "$URL"
-End_Time 下载移植包
+End_Time 下载包
 ### 系统包下载结束
 
 ### 解包
@@ -85,7 +85,7 @@ mkdir -p "$GITHUB_WORKSPACE"/zip
 
 echo -e "${Yellow}- 开始解压包"
 Start_Time
-$a7z x "$GITHUB_WORKSPACE"/$zip_name -r -o"$GITHUB_WORKSPACE"/Third_Party >/dev/null
+$a7z x "$GITHUB_WORKSPACE"/$zip_name -o"$GITHUB_WORKSPACE"/Third_Party payload.bin >/dev/null
 rm -rf "$GITHUB_WORKSPACE"/$zip_name
 End_Time 解压包
 mkdir -p "$GITHUB_WORKSPACE"/Extra_dir
