@@ -15,15 +15,15 @@ Yellow='\033[1;33m' # 粗体黄色
 Blue='\033[1;34m'   # 粗体蓝色
 Green='\033[1;32m'  # 粗体绿色
 
-port_os_version=$(echo ${URL} | cut -d"/" -f4)                   # 移植包的 OS 版本号, 例: OS1.0.7.0.UNACNXM
-port_version=$(echo ${port_os_version} | sed 's/OS1/V816/g')     # 移植包的实际版本号, 例: V816.0.7.0.UNACNXM
-port_zip_name=$(echo ${URL} | cut -d"/" -f5)                     # 移植包的 zip 名称, 例: miui_AURORA_OS1.0.7.0.UNACNXM_81a48e3c20_14.0.zip
-vendor_os_version=$(echo ${URL} | cut -d"/" -f4)          # 底包的 OS 版本号, 例: OS1.0.32.0.UNCCNXM
-vendor_version=$(echo ${vendor_os_version} | sed 's/OS1/V816/g') # 底包的实际版本号, 例: V816.0.32.0.UNCCNXM
-vendor_zip_name=$(echo ${URL} | cut -d"/" -f5)            # 底包的 zip 名称, 例: miui_HOUJI_OS1.0.32.0.UNCCNXM_4fd0e15877_14.0.zip
+port_os_version=$(echo ${URL} | cut -d"/" -f4)                   
+port_version=$(echo ${port_os_version} | sed 's/OS1/V816/g')     
+port_zip_name=$(echo ${URL} | cut -d"/" -f5)                   
+vendor_os_version=$(echo ${URL} | cut -d"/" -f4)          
+vendor_version=$(echo ${vendor_os_version} | sed 's/OS1/V816/g')
+vendor_zip_name=$(echo ${URL} | cut -d"/" -f5)     
 
-android_version=$(echo ${URL} | cut -d"_" -f5 | cut -d"." -f1) # Android 版本号, 例: 14
-build_time=$(date) && build_utc=$(date -d "$build_time" +%s)   # 构建时间
+android_version=$(echo ${URL} | cut -d"_" -f5 | cut -d"." -f1) 
+build_time=$(date) && build_utc=$(date -d "$build_time" +%s)   
 
 sudo chmod -R 777 "$GITHUB_WORKSPACE"/tools
 magiskboot="$GITHUB_WORKSPACE"/tools/magiskboot
@@ -281,6 +281,11 @@ done
 cd "$GITHUB_WORKSPACE"/apk/services/
 sudo $apktool_jar b -q -f -c "$GITHUB_WORKSPACE"/apk/services/ -o services.jar
 sudo cp -rf "$GITHUB_WORKSPACE"/apk/services/services.jar "$GITHUB_WORKSPACE"/images/system/system/framework/services.jar
+# 删除oat等多余文件（尝试优化系统）
+echo -e "${Red}- 删除oat等多余文件（尝试优化系统）"
+sudo rm -rf "$GITHUB_WORKSPACE"/images/system/system/framework/oat
+sudo rm -rf "$GITHUB_WORKSPACE"/images/system/system/framework/*.fsv_meta
+sudo rm -rf "$GITHUB_WORKSPACE"/images/system/system/framework/*.vdex
 # 替换更改文件/删除多余文件
 echo -e "${Red}- 替换更改文件/删除多余文件"
 sudo cp -r "$GITHUB_WORKSPACE"/"${device}"/* "$GITHUB_WORKSPACE"/images
