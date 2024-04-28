@@ -72,28 +72,28 @@ End_Time() {
 ### 系统包下载
 echo -e "${Red}- 开始下载系统包"
 Start_Time
+echo -e "${Yellow}- 开始下载包"
 aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" "$URL"
-End_Time 下载包
+End_Time 下载底包
 ### 系统包下载结束
 
 ### 解包
 echo -e "${Red}- 开始解压系统包"
-mkdir -p "$GITHUB_WORKSPACE"/Third_Party
 mkdir -p "$GITHUB_WORKSPACE"/"${device}"
-mkdir -p "$GITHUB_WORKSPACE"/"${device}"/config
+mkdir -p "$GITHUB_WORKSPACE"/images/config
 mkdir -p "$GITHUB_WORKSPACE"/zip
 
 echo -e "${Yellow}- 开始解压包"
 Start_Time
-$a7z x "$GITHUB_WORKSPACE"/$zip_name -o"$GITHUB_WORKSPACE"/Third_Party payload.bin >/dev/null
-rm -rf "$GITHUB_WORKSPACE"/$zip_name
+$a7z x "$GITHUB_WORKSPACE"/${zip_name} -o"$GITHUB_WORKSPACE"/"${device}" payload.bin >/dev/null
+rm -rf "$GITHUB_WORKSPACE"/${zip_name}
 End_Time 解压包
 mkdir -p "$GITHUB_WORKSPACE"/Extra_dir
 echo -e "${Red}- 开始解包payload"
-$payload_extract -s -o "$GITHUB_WORKSPACE"/Extra_dir/ -i "$GITHUB_WORKSPACE"/Third_Party/payload.bin -X odm system_dlkm vendor vendor_dlkm product system system_ext mi_ext -T0
-sudo rm -rf "$GITHUB_WORKSPACE"/Third_Party/payload.bin
+$payload_extract -s -o "$GITHUB_WORKSPACE"/Extra_dir/ -i "$GITHUB_WORKSPACE"/"${device}"/payload.bin -X -e -T0
+sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/payload.bin
 echo -e "${Red}- 开始分解包image"
-for i in odm system_dlkm vendor vendor_dlkm product system system_ext mi_ext; do
+for i in mi_ext odm system_dlkm vendor vendor_dlkm product system system_ext; do
   echo -e "${Yellow}- 正在分解包: $i.img"
   cd "$GITHUB_WORKSPACE"/"${device}"
   sudo $erofs_extract -s -i "$GITHUB_WORKSPACE"/Extra_dir/$i.img -x
@@ -101,8 +101,6 @@ for i in odm system_dlkm vendor vendor_dlkm product system system_ext mi_ext; do
 done
 sudo mkdir -p "$GITHUB_WORKSPACE"/"${device}"/firmware-update/
 sudo cp -rf "$GITHUB_WORKSPACE"/Extra_dir/* "$GITHUB_WORKSPACE"/"${device}"/firmware-update/
-cd "$GITHUB_WORKSPACE"/"${device}"
-sudo rm -rf "$GITHUB_WORKSPACE"/Third_Party
 ### 解包结束
 
 ### 写入变量
