@@ -198,10 +198,6 @@ done
 # Add aptX Lossless
 echo -e "${Red}- Add aptX Lossless"
 sudo sed -i '/# end of file/i persist.vendor.qcom.bluetooth.aptxadaptiver2_2_support=true' "$GITHUB_WORKSPACE"/"${device}"/vendor/build.prop
-echo -e "${Red}- 替换相机"
-sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/product/priv-app/MiuiCamera/*
-sudo cat "$GITHUB_WORKSPACE"/"${device}"_files/MiuiCamera.apk.1 "$GITHUB_WORKSPACE"/"${device}"_files/MiuiCamera.apk.2 "$GITHUB_WORKSPACE"/"${device}"_files/MiuiCamera.apk.3 >"$GITHUB_WORKSPACE"/"${device}"_files/MiuiCamera.apk
-sudo cp -f "$GITHUB_WORKSPACE"/"${device}"_files/MiuiCamera.apk "$GITHUB_WORKSPACE"/"${device}"/product/priv-app/MiuiCamera/
 # 占位广告应用
 echo -e "${Red}- 占位广告应用"
 sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/product/app/MSA/*
@@ -257,11 +253,6 @@ done
 cd "$GITHUB_WORKSPACE"/apk/services/
 sudo $apktool_jar b -q -f -c "$GITHUB_WORKSPACE"/apk/services/ -o services.jar
 sudo cp -rf "$GITHUB_WORKSPACE"/apk/services/services.jar "$GITHUB_WORKSPACE"/"${device}"/system/system/framework/services.jar
-# 替换更改文件/删除多余文件
-echo -e "${Red}- 替换更改文件/删除多余文件"
-sudo cp -r "$GITHUB_WORKSPACE"/"${device}"/* "$GITHUB_WORKSPACE"/"${device}"
-sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"
-sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"_files
 End_Time 功能修复
 ### 功能修复结束
 
@@ -271,13 +262,13 @@ Start_Time
 partitions=("mi_ext" "odm" "product" "system" "system_ext" "system_dlkm" "vendor" "vendor_dlkm")
 for partition in "${partitions[@]}"; do
   echo -e "${Red}- 正在生成: $partition"
-  sudo python3 "$GITHUB_WORKSPACE"/tools/fspatch.py "$GITHUB_WORKSPACE"/"${device}"/$partition "$GITHUB_WORKSPACE"/"${device}"/config/"$partition"_fs_config
-  sudo python3 "$GITHUB_WORKSPACE"/tools/contextpatch.py "$GITHUB_WORKSPACE"/"${device}"/$partition "$GITHUB_WORKSPACE"/"${device}"/config/"$partition"_file_contexts
-  sudo $erofs_mkfs --quiet -zlz4hc,9 -T 1230768000 --mount-point /$partition --fs-config-file "$GITHUB_WORKSPACE"/"${device}"/config/"$partition"_fs_config --file-contexts "$GITHUB_WORKSPACE"/"${device}"/config/"$partition"_file_contexts "$GITHUB_WORKSPACE"/"${device}"/$partition.img "$GITHUB_WORKSPACE"/"${device}"/$partition
+  sudo python3 "$GITHUB_WORKSPACE"/tools/fspatch.py "$GITHUB_WORKSPACE"/"${device}"/$partition "$GITHUB_WORKSPACE"/images/config/"$partition"_fs_config
+  sudo python3 "$GITHUB_WORKSPACE"/tools/contextpatch.py "$GITHUB_WORKSPACE"/"${device}"/$partition "$GITHUB_WORKSPACE"/images/config/"$partition"_file_contexts
+  sudo $erofs_mkfs --quiet -zlz4hc,9 -T 1230768000 --mount-point /$partition --fs-config-file "$GITHUB_WORKSPACE"/images/config/"$partition"_fs_config --file-contexts "$GITHUB_WORKSPACE"/"${device}"/config/"$partition"_file_contexts "$GITHUB_WORKSPACE"/"${device}"/$partition.img "$GITHUB_WORKSPACE"/"${device}"/$partition
   eval "${partition}_size=$(du -sb "$GITHUB_WORKSPACE"/"${device}"/$partition.img | awk '{print $1}')"
   sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/$partition
 done
-sudo rm -rf "$GITHUB_WORKSPACE"/"${device}"/config
+sudo rm -rf "$GITHUB_WORKSPACE"/images/config
 $lpmake --metadata-size 65536 --super-name super --block-size 4096 --partition mi_ext_a:readonly:"$mi_ext_size":qti_dynamic_partitions_a --image mi_ext_a="$GITHUB_WORKSPACE"/"${device}"/mi_ext.img --partition mi_ext_b:readonly:0:qti_dynamic_partitions_b --partition odm_a:readonly:"$odm_size":qti_dynamic_partitions_a --image odm_a="$GITHUB_WORKSPACE"/"${device}"/odm.img --partition odm_b:readonly:0:qti_dynamic_partitions_b --partition product_a:readonly:"$product_size":qti_dynamic_partitions_a --image product_a="$GITHUB_WORKSPACE"/"${device}"/product.img --partition product_b:readonly:0:qti_dynamic_partitions_b --partition system_a:readonly:"$system_size":qti_dynamic_partitions_a --image system_a="$GITHUB_WORKSPACE"/"${device}"/system.img --partition system_b:readonly:0:qti_dynamic_partitions_b --partition system_ext_a:readonly:"$system_ext_size":qti_dynamic_partitions_a --image system_ext_a="$GITHUB_WORKSPACE"/"${device}"/system_ext.img --partition system_ext_b:readonly:0:qti_dynamic_partitions_b --partition system_dlkm_a:readonly:"$system_dlkm_size":qti_dynamic_partitions_a --image system_dlkm_a="$GITHUB_WORKSPACE"/"${device}"/system_dlkm.img --partition system_dlkm_b:readonly:0:qti_dynamic_partitions_b --partition vendor_a:readonly:"$vendor_size":qti_dynamic_partitions_a --image vendor_a="$GITHUB_WORKSPACE"/"${device}"/vendor.img --partition vendor_b:readonly:0:qti_dynamic_partitions_b --partition vendor_dlkm_a:readonly:"$vendor_dlkm_size":qti_dynamic_partitions_a --image vendor_dlkm_a="$GITHUB_WORKSPACE"/"${device}"/vendor_dlkm.img --partition vendor_dlkm_b:readonly:0:qti_dynamic_partitions_b --device super:8321499136 --metadata-slots 3 --group qti_dynamic_partitions_a:8321499136 --group qti_dynamic_partitions_b:8321499136 --virtual-ab -F --output "$GITHUB_WORKSPACE"/"${device}"/super.img
 End_Time 打包super
 for i in mi_ext odm product system system_ext system_dlkm vendor vendor_dlkm; do
