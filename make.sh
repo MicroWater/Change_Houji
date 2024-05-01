@@ -281,6 +281,9 @@ done
 cd "$GITHUB_WORKSPACE"/apk/services/
 sudo $apktool_jar b -q -f -c "$GITHUB_WORKSPACE"/apk/services/ -o services.jar
 sudo cp -rf "$GITHUB_WORKSPACE"/apk/services/services.jar "$GITHUB_WORKSPACE"/images/system/system/framework/services.jar
+# 使用dex2oat优化系统速度
+echo -e "${Red}- 使用dex2oat优化系统速度"
+sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/dex2oat.zip -d "$GITHUB_WORKSPACE"/images/system/system/framework/oat/arm64
 # 替换更改文件/删除多余文件
 echo -e "${Red}- 替换更改文件/删除多余文件"
 sudo cp -r "$GITHUB_WORKSPACE"/"${device}"/* "$GITHUB_WORKSPACE"/images
