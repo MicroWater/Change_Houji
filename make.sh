@@ -281,11 +281,6 @@ done
 cd "$GITHUB_WORKSPACE"/apk/services/
 sudo $apktool_jar b -q -f -c "$GITHUB_WORKSPACE"/apk/services/ -o services.jar
 sudo cp -rf "$GITHUB_WORKSPACE"/apk/services/services.jar "$GITHUB_WORKSPACE"/images/system/system/framework/services.jar
-# 删除oat等多余文件（尝试优化系统）
-echo -e "${Red}- 删除oat等多余文件（尝试优化系统）"
-sudo rm -rf "$GITHUB_WORKSPACE"/images/system/system/framework/oat
-sudo rm -rf "$GITHUB_WORKSPACE"/images/system/system/framework/*.fsv_meta
-sudo rm -rf "$GITHUB_WORKSPACE"/images/system/system/framework/*.vdex
 # 替换更改文件/删除多余文件
 echo -e "${Red}- 替换更改文件/删除多余文件"
 sudo cp -r "$GITHUB_WORKSPACE"/"${device}"/* "$GITHUB_WORKSPACE"/images
@@ -332,7 +327,7 @@ echo -e "${Red}- 定制 ROM 包名"
 md5=$(md5sum "$GITHUB_WORKSPACE"/zip/miui_${device}_${port_os_version}.zip)
 echo "MD5=${md5:0:32}" >>$GITHUB_ENV
 zip_md5=${md5:0:10}
-rom_name="miui_HOUJI_${port_os_version}_${zip_md5}_${android_version}.0_YuKongA.zip"
+rom_name="miui_HOUJI_${port_os_version}_${zip_md5}_${android_version}.0_Atri.zip"
 sudo mv "$GITHUB_WORKSPACE"/zip/miui_${device}_${port_os_version}.zip "$GITHUB_WORKSPACE"/zip/"${rom_name}"
 echo "rom_name=$rom_name" >>$GITHUB_ENV
 ### 输出卡刷包结束
