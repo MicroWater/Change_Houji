@@ -205,14 +205,6 @@ sudo rm -rf "$GITHUB_WORKSPACE"/vendor_boot
 # 替换 vendor 的 fstab
 echo -e "${Red}- 替换 vendor 的 fstab"
 sudo cp -f "$GITHUB_WORKSPACE"/"${device}"_files/fstab.qcom "$GITHUB_WORKSPACE"/"${device}"/vendor/etc/fstab.qcom
-# 替换 Product 的叠加层
-echo -e "${Red}- 替换 product 的叠加层"
-sudo rm -rf "$GITHUB_WORKSPACE"/images/product/overlay/*
-sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/overlay.zip -d "$GITHUB_WORKSPACE"/images/product/overlay
-# 替换 device_features 文件
-echo -e "${Red}- 替换 device_features 文件"
-sudo rm -rf "$GITHUB_WORKSPACE"/images/product/etc/device_features/*
-sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/device_features.zip -d "$GITHUB_WORKSPACE"/images/product/etc/device_features/
 # 精简部分应用
 echo -e "${Red}- 精简部分应用"
 apps=("MIGalleryLockscreen" "MIUIDriveMode" "MIUIDuokanReader" "MIUIGameCenter" "MIUINewHome" "MIUIYoupin" "MIUIHuanJi" "MIUIMiDrive" "MIUIVirtualSim" "ThirdAppAssistant" "XMRemoteController" "MIUIVipAccount" "MiuiScanner" "Xinre" "SmartHome" "MiShop" "MiRadio" "MIUICompass" "MediaEditor" "BaiduIME" "iflytek.inputmethod" "MIService" "MIUIEmail" "MIUIVideo" "MIUIMusicT")
