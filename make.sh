@@ -221,10 +221,6 @@ sudo sed -i '/# end of file/i persist.vendor.qcom.bluetooth.aptxadaptiver2_2_sup
 # 占位广告应用
 echo -e "${Red}- 占位广告应用"
 sudo rm -rf "$GITHUB_WORKSPACE"/images/product/app/MSA/*
-sudo cp -f "$GITHUB_WORKSPACE"/"${device}"_files/MSA.apk "$GITHUB_WORKSPACE"/images/product/app/MSA
-# 替换开机动画
-echo -e "${Red}- 替换开机动画"
-sudo cp -f "$GITHUB_WORKSPACE"/"${device}"_files/bootanimation.zip "$GITHUB_WORKSPACE"/images/product/media/bootanimation.zip
 # 替换完美图标
 echo -e "${Red}- 替换完美图标"
 cd "$GITHUB_WORKSPACE"
@@ -258,27 +254,6 @@ sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/recovery.zip -d "$GITHUB_
 # 添加刷机脚本
 echo -e "${Red}- 添加刷机脚本"
 sudo unzip -o -q "$GITHUB_WORKSPACE"/tools/flashtools.zip -d "$GITHUB_WORKSPACE"/images
-# 移除 Android 签名校验
-sudo mkdir -p "$GITHUB_WORKSPACE"/apk/
-echo -e "${Red}- 移除 Android 签名校验"
-sudo cp -rf "$GITHUB_WORKSPACE"/images/system/system/framework/services.jar "$GITHUB_WORKSPACE"/apk/services.apk
-cd "$GITHUB_WORKSPACE"/apk
-sudo $apktool_jar d -q "$GITHUB_WORKSPACE"/apk/services.apk
-fbynr='getMinimumSignatureSchemeVersionForTargetSdk'
-sudo find "$GITHUB_WORKSPACE"/apk/services/smali_classes2/com/android/server/pm/ "$GITHUB_WORKSPACE"/apk/services/smali_classes2/com/android/server/pm/pkg/parsing/ -type f -maxdepth 1 -name "*.smali" -exec grep -H "$fbynr" {} \; | cut -d ':' -f 1 | while read -r i; do
-  hs=$(grep -n "$fbynr" "$i" | cut -d ':' -f 1)
-  sz=$(sudo tail -n +"$hs" "$i" | grep -m 1 "move-result" | tr -dc '0-9')
-  hs1=$(sudo awk -v HS=$hs 'NR>=HS && /move-result /{print NR; exit}' "$i")
-  hss=$hs
-  sedsc="const/4 v${sz}, 0x0"
-  { sudo sed -i "${hs},${hs1}d" "$i" && sudo sed -i "${hss}i\\${sedsc}" "$i"; } && echo -e "${Yellow}- ${i} 修改成功"
-done
-cd "$GITHUB_WORKSPACE"/apk/services/
-sudo $apktool_jar b -q -f -c "$GITHUB_WORKSPACE"/apk/services/ -o services.jar
-sudo cp -rf "$GITHUB_WORKSPACE"/apk/services/services.jar "$GITHUB_WORKSPACE"/images/system/system/framework/services.jar
-# 使用dex2oat优化系统速度
-echo -e "${Red}- 使用dex2oat优化系统速度"
-sudo unzip -o -q "$GITHUB_WORKSPACE"/"${device}"_files/dex2oat.zip -d "$GITHUB_WORKSPACE"/images/system/system/framework/oat/arm64
 # 替换更改文件/删除多余文件
 echo -e "${Red}- 替换更改文件/删除多余文件"
 sudo cp -r "$GITHUB_WORKSPACE"/"${device}"/* "$GITHUB_WORKSPACE"/images
